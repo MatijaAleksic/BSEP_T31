@@ -30,11 +30,11 @@ public class CertificateSigningRequest {
     @Column(name = "email", unique = false, nullable = false)
     private String email;
 
-    @Column(name = "uniqueIdentifier", unique = false, nullable = false)
-    private String uniqueIdentifier;
+    @Column(name = "uid", unique = false, nullable = false)
+    private Long uid;
 
 
-    public CertificateSigningRequest(String commonName, String surname, String givenName, String organization, String organizationUnit, String country, String email, String uniqueIdentifier, byte[] fullCertificate) {
+    public CertificateSigningRequest(String commonName, String surname, String givenName, String organization, String organizationUnit, String country, String email, Long uid) {
         this.commonName = commonName;
         this.surname = surname;
         this.givenName = givenName;
@@ -42,7 +42,7 @@ public class CertificateSigningRequest {
         this.organizationUnit = organizationUnit;
         this.country = country;
         this.email = email;
-        this.uniqueIdentifier = uniqueIdentifier;
+        this.uid = uid;
     }
 
     public CertificateSigningRequest() {
@@ -108,11 +108,11 @@ public class CertificateSigningRequest {
         this.email = email;
     }
 
-    public String getUniqueIdentifier() {
-        return uniqueIdentifier;
+    public Long getUid() {
+        return uid;
     }
 
-    public void setUniqueIdentifier(String uniqueIdentifier) {
-        this.uniqueIdentifier = uniqueIdentifier;
+    public void setUid(Long uid) {
+        this.uid = uid;
     }
 }

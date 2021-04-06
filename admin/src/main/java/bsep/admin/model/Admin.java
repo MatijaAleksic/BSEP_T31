@@ -9,19 +9,23 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Integer id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "username", unique = true, nullable = false)
     protected String username;
 
-    @Column(nullable = false)
+    @Column(name = "password", unique = false, nullable = false)
     protected String password;
+
+    @Column(name = "email", unique = true, nullable = false)
+    protected String email;
 
     public Admin() {
     }
 
-    public Admin(Integer id, String username, String password) {
+    public Admin(Integer id, String username, String password, String email) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.email = email;
     }
 
     public Integer getId() {
@@ -46,5 +50,13 @@ public class Admin {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
