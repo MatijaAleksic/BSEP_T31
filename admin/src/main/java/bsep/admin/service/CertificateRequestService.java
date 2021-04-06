@@ -19,6 +19,13 @@ public class CertificateRequestService {
         return certificateRequestRepository.findById(id);
     }
 
+    public CertificateRequest findByEmail(String email)
+    {
+        return certificateRequestRepository.findByEmail(email);
+    }
+
+
+
     public void createCertificateRequest(CertificateRequestDTO certificateRequestDTO)
     {
         CertificateRequest cr = new CertificateRequest(certificateRequestDTO.getCommonName(),

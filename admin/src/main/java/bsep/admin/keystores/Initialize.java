@@ -57,21 +57,14 @@ public class Initialize {
 
     private void createCertificate() throws OperatorCreationException, CertificateException, CRLException, IOException {
         keyStoreWriter.createKeyStore();
-
         KeyPair keyPair = generateKeyPair();
-        SubjectData subjectData = generateAdminSubjectDataPredefined();
+        SubjectData subjectData = generateSubjectDataPredefined();
 
         assert keyPair != null;
-
         subjectData.setPublicKey(keyPair.getPublic());
-
-
         JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
         builder = builder.setProvider("BC");
-
-
         ContentSigner contentSigner = builder.build(keyPair.getPrivate());
-
 
         Date startDate = new Date();
         Date endDate = new Date();
@@ -114,7 +107,7 @@ public class Initialize {
         os.close();
     }
 
-    private SubjectData generateAdminSubjectDataPredefined() {
+    private SubjectData generateSubjectDataPredefined() {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
