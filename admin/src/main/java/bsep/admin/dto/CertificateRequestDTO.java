@@ -1,40 +1,23 @@
-package bsep.admin.model;
+package bsep.admin.dto;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 
-@Entity
-@Table(name = "certificate_requests")
-public class CertificateSigningRequest {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class CertificateRequestDTO {
 
-    @Column(name = "commonName", unique = false, nullable = false)
     private String commonName;
-
-    @Column(name = "surname", unique = false, nullable = false)
     private String surname;
-
-    @Column(name = "givenName", unique = false, nullable = false)
     private String givenName;
-
-    @Column(name = "organization", unique = false, nullable = false)
     private String organization;
-
-    @Column(name = "organizationUnit", unique = false, nullable = false)
     private String organizationUnit;
-
-    @Column(name = "country", unique = false, nullable = false)
     private String country;
-
-    @Column(name = "email", unique = false, nullable = false)
     private String email;
-
-    @Column(name = "uid", unique = false, nullable = false)
     private Long uid;
 
+    public CertificateRequestDTO() {
+    }
 
-    public CertificateSigningRequest(String commonName, String surname, String givenName, String organization, String organizationUnit, String country, String email, Long uid) {
+    public CertificateRequestDTO(String commonName, String surname, String givenName, String organization,
+                                 String organizationUnit, String country, String email, Long uid) {
         this.commonName = commonName;
         this.surname = surname;
         this.givenName = givenName;
@@ -43,13 +26,6 @@ public class CertificateSigningRequest {
         this.country = country;
         this.email = email;
         this.uid = uid;
-    }
-
-    public CertificateSigningRequest() {
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getCommonName() {

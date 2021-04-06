@@ -1,13 +1,9 @@
 package bsep.admin.keystores;
 
-import bsep.admin.dto.ExtendedKeyUsageDTO;
-import bsep.admin.dto.KeyUsageDTO;
-
 import bsep.admin.model.SubjectData;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.*;
 import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -29,13 +25,11 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import java.util.logging.Logger;
 
 @Component
 public class Initialize {
@@ -55,17 +49,17 @@ public class Initialize {
     public void createCerAndCrlForRootCA() {
         try {
             if (!keyStoreWriter.loadKeyStore())
-                createCer();
+                createCertificate();
         } catch (OperatorCreationException | CertificateException | CRLException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void createCer() throws OperatorCreationException, CertificateException, CRLException, IOException {
+    private void createCertificate() throws OperatorCreationException, CertificateException, CRLException, IOException {
         keyStoreWriter.createKeyStore();
 
         KeyPair keyPair = generateKeyPair();
-        SubjectData subjectData = generateSubjectDataPredefined();
+        SubjectData subjectData = generateAdminSubjectDataPredefined();
 
         assert keyPair != null;
 
@@ -85,36 +79,6 @@ public class Initialize {
         X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(subjectData.getX500name(), new BigInteger(subjectData.getSerialNumber()),
                 startDate, endDate, subjectData.getX500name(), keyPair.getPublic());
 
-        KeyUsageDTO keyUsageDTO = new KeyUsageDTO(true, true, true, true, true, true, true, true, true);
-        KeyUsage k = new KeyUsage(keyUsageDTO.getcRLSign() |
-                keyUsageDTO.getDataEncipherment() |
-                keyUsageDTO.getDecipherOnly() |
-                keyUsageDTO.getDigitalSignature() |
-                keyUsageDTO.getEncipherOnly() |
-                keyUsageDTO.getKeyAgreement() |
-                keyUsageDTO.getKeyCertSign() |
-                keyUsageDTO.getKeyEncipherment() |
-                keyUsageDTO.getNonRepudiation());
-
-        try {
-            certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
-            certGen.addExtension(Extension.keyUsage, false, k);
-        } catch (CertIOException e) {
-            e.printStackTrace();
-        }
-
-        ExtendedKeyUsageDTO extendedKeyUsageDTO = new ExtendedKeyUsageDTO(true, true, true, true, true, true);
-        ExtendedKeyUsage eku = new ExtendedKeyUsage(extendedKeyUsageDTO.makeKeyPurposeIdArray());
-
-        try {
-            certGen.addExtension(Extension.extendedKeyUsage, false, eku);
-
-            GeneralNames subjectAltName = new GeneralNames(new GeneralName(GeneralName.dNSName, "admin.com"));
-            certGen.addExtension(X509Extensions.SubjectAlternativeName, false, subjectAltName);
-        } catch (CertIOException e) {
-            e.printStackTrace();
-        }
-
         X509CertificateHolder certHolder = certGen.build(contentSigner);
 
         JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
@@ -122,12 +86,10 @@ public class Initialize {
 
         X509Certificate createdCertificate = certConverter.getCertificate(certHolder);
 
-        keyStoreWriter.writeRootCA("super.admin@admin.com", keyPair.getPrivate(), createdCertificate);
+        keyStoreWriter.writeRootCA("admin@gmail.com", keyPair.getPrivate(), createdCertificate);
         keyStoreWriter.saveKeyStore();
 
         createCRL(keyPair.getPrivate(), subjectData.getX500name());
-        //writeCertificateToPEM(createdCertificate);
-        //writePrivateKeyToPEM(keyPair.getPrivate());
     }
 
     private void createCRL(PrivateKey pk, X500Name issuerName) throws CRLException, IOException, OperatorCreationException {
@@ -152,7 +114,7 @@ public class Initialize {
         os.close();
     }
 
-    private SubjectData generateSubjectDataPredefined() {
+    private SubjectData generateAdminSubjectDataPredefined() {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -160,7 +122,7 @@ public class Initialize {
         LocalDateTime startDate = LocalDateTime.now();
         startDate.format(dtf);
 
-        LocalDateTime endDate = startDate.plusYears(1);
+        LocalDateTime endDate = startDate.plusYears(2);
         endDate.format(dtf);
 
         Calendar curCal = new GregorianCalendar(TimeZone.getDefault());
@@ -170,13 +132,13 @@ public class Initialize {
 
         // klasa X500NameBuilder pravi X500Name objekat koji predstavlja podatke o vlasniku
         X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-        builder.addRDN(BCStyle.CN, "admin.com");
-        builder.addRDN(BCStyle.SURNAME, "Martin");
-        builder.addRDN(BCStyle.GIVENNAME, "Neil");
-        builder.addRDN(BCStyle.O, "FTN");
-        builder.addRDN(BCStyle.OU, "SIIT");
-        builder.addRDN(BCStyle.C, "RS");
-        builder.addRDN(BCStyle.E, "super.admin@admin.com");
+        builder.addRDN(BCStyle.CN, "admin");
+        builder.addRDN(BCStyle.SURNAME, "Matija");
+        builder.addRDN(BCStyle.GIVENNAME, "Aleksic");
+        builder.addRDN(BCStyle.O, "Organizacija");
+        builder.addRDN(BCStyle.OU, "OU");
+        builder.addRDN(BCStyle.C, "CC");
+        builder.addRDN(BCStyle.E, "admin@gmail.com");
 
         // UID (USER ID) je ID korisnika
         builder.addRDN(BCStyle.UID, String.valueOf(1));
