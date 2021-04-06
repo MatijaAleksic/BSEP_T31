@@ -11,5 +11,5 @@ public interface CertificateSigningRequestRepository extends JpaRepository<Certi
 
     CertificateSigningRequest findByUid(Long uid);
     CertificateSigningRequest findByEmail(String email);
-
+    CertificateSigningRequest findById(Long id);
 }
